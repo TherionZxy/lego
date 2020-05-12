@@ -14,60 +14,63 @@ import java.util.*;
  */
 @Component
 public class ImageUpload {
+    // 保存时的图片设置（在application.yml中进行配置）
     @Value("${lego.images.path}")
     private String uploadPath;
+    @Value("#{'${lego.images.names}'.split(',')}")
+    private String[] names;
+    @Value("${lego.images.height}")
+    private int height;
+    @Value("${lego.images.width}")
+    private int width;
 
     /**
-     * 保存图片，并且返回保存后的图片路径，支持保存原图、缩略图等
-     * @param file
+     * 批量保存图片
+     * @param filesList
      * @return
      */
-    public String saveImage(MultipartFile file, ImageSize... sizes) {
-        // 获取原始图片名
-        String originName = file.getOriginalFilename();
-        // 获取图片扩展名
-        String[] originSplit = originName.split("\\.");
-        String extendName = originSplit[originSplit.length - 1];
+    public String saveImages(List<MultipartFile>... filesList) {
         // 获取用于保存的随机图片名
-        String filepath = absFilePath(originName);
+        String randomFileName = randomFileName();
+        String filepath = uploadPath + randomFileName;
         // 创建图片文件夹
         File imagesDir = new File(filepath);
         if (!imagesDir.exists()) {
             imagesDir.mkdir();
         }
 
-        String origin = filepath + "/origin." + extendName;
-        // 保存图片
+        String extendStr = "";
+        // 批量处理所有的图片
         try {
-            // 保存原图
-            file.transferTo(new File(origin));
-            // 保存略缩图
-            for (ImageSize size : sizes) {
-                Thumbnails.of(origin).size(size.getWidth(), size.getHeight()).toFile(filepath + '/' +
-                        size.getWidth() + 'x' + size.getHeight() + '.' + extendName);
+            for(int i=0;i<filesList.length;i++) {
+                int j=1;
+                for(;j<=filesList[i].size();j++) {
+                    Thumbnails.of(filesList[i].get(j-1).getInputStream()).size(width, height).toFile(filepath + "/"
+                            + names[i] + j + ".jpg");
+                }
+                extendStr = extendStr + "_" + (j-1);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return origin;
+
+        return randomFileName + extendStr;
     }
 
     /**
      * 生成随机的图片名称
-     * @param originName
      * @return filename
      */
-    public String randomFileName(String originName) {
+    public String randomFileName() {
         return  String.valueOf(new Date().getTime()) + Math.abs(new Random().nextInt(10000) + 10000);
     }
 
     /**
      * 获取完整的文件路径
-     * @param originName
      * @return filepath
      */
-    public String absFilePath(String originName) {
-        return uploadPath + randomFileName(originName);
+    public String absFilePath() {
+        return uploadPath + randomFileName();
     }
 
 }

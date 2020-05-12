@@ -27,12 +27,17 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 1MB
-      max-request-size: 10MB
+      max-file-size: 10MB
+      max-request-size: 50MB
 
 lego:
   images:
     # 文件保存在本地的哪个文件夹内，这里换成本机上的地址
     path: /Users/zhangxiaoye/Downloads/lego-img/
+    # 分别存储商品的哪几种图片
+    names: display,intro
+    # 设置保存在服务器端的图片的尺寸大小
+    height: 500
+    width: 500
 
 
