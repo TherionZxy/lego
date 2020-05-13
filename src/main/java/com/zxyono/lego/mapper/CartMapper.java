@@ -1,4 +1,7 @@
 package com.zxyono.lego.mapper;
 
-public interface CartMapper {
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zxyono.lego.entity.Cart;
+
+public interface CartMapper extends BaseMapper<Cart> {
 }

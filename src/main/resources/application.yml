@@ -19,7 +19,7 @@ spring:
       max-wait: 100
     # 使用resources/sql下的sql文件自动建表
     schema: classpath:sql/create.sql
-    initialization-mode: always
+#    initialization-mode: always
   h2:
     console:
       enabled: true

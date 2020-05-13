@@ -1,4 +1,7 @@
 package com.zxyono.lego.mapper;
 
-public interface FruitMapper {
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zxyono.lego.entity.Fruit;
+
+public interface FruitMapper extends BaseMapper<Fruit> {
 }
