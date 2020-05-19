@@ -13,6 +13,7 @@ create table if not exists `fruit` (
   fruit_intro varchar(512) comment '水果描述',
   fruit_pic varchar(40) comment '水果图片文件夹',
   is_flash_sale tinyint default 0 comment '是否参与限时抢购：0——否，1——是' ,
+  is_sale tinyint default 0 comment '是否上架：0——否，1——是',
   max_num int comment '限购个数',
   start_time datetime comment '抢购开始时间',
   end_time datetime comment '抢购结束时间'
@@ -25,6 +26,7 @@ create table if not exists `order` (
   order_content varchar(512) comment '订单内容',
   order_owner varchar(15) comment '客户名',
   order_phone varchar(20) comment '手机号',
+  code int(8) comment '提货码',
 
   create_time datetime comment '下单日期',
 

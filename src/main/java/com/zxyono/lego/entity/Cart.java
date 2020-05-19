@@ -8,5 +8,5 @@ import lombok.Data;
 public class Cart {
     private Long userId;
     private Long fruitId;
-    private int fruitNum;
+    private Integer fruitNum;
 }

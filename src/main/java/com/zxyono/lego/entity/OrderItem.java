@@ -9,6 +9,6 @@ import lombok.Data;
 public class OrderItem {
     private Long orderId;
     private Long fruitId;
-    private int fruitNum;
+    private Integer fruitNum;
     private Double fruitPrice;
 }

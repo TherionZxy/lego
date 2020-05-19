@@ -10,5 +10,4 @@ public class LegoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LegoApplication.class, args);
 	}
-
 }

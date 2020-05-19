@@ -12,7 +12,7 @@ public class Order {
     @TableId
     private Long orderId;
     private Long userId;
-    private int orderStatus;
+    private Integer orderStatus;
     private String orderContent;
     private String orderOwner;
     private String orderPhone;

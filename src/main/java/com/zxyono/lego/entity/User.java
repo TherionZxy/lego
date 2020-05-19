@@ -12,4 +12,5 @@ public class User {
     private String openId;
     private String defaultPhone;
     private String defaultName;
+
 }

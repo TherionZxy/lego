@@ -19,7 +19,9 @@ spring:
       max-wait: 100
     # 使用resources/sql下的sql文件自动建表
     schema: classpath:sql/create.sql
-#    initialization-mode: always
+    # 使用resources/sql下的data文件创建测试数据
+    data: classpath:sql/data.sql
+  # initialization-mode: always
   h2:
     console:
       enabled: true
@@ -29,6 +31,17 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 50MB
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    timeout: 10000
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
 
 lego:
   images:
@@ -39,5 +52,6 @@ lego:
     # 设置保存在服务器端的图片的尺寸大小
     height: 500
     width: 500
+
 
 
