@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 @TableName("fruit")
 public class Fruit {
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "fruit_id",type = IdType.AUTO)
     private Long fruitId;
     private String fruitName;
     private Double normPrice;

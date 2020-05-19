@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("cart")
+@TableName(value = "cart")
 public class Cart {
     private Long userId;
     private Long fruitId;

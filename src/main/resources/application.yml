@@ -21,7 +21,7 @@ spring:
     schema: classpath:sql/create.sql
     # 使用resources/sql下的data文件创建测试数据
     data: classpath:sql/data.sql
-  # initialization-mode: always
+#    initialization-mode: always
   h2:
     console:
       enabled: true
@@ -52,6 +52,11 @@ lego:
     # 设置保存在服务器端的图片的尺寸大小
     height: 500
     width: 500
+  app:
+    # 小程序相关参数
+    appid:
+    appsecret:
+    authurl: https://api.weixin.qq.com/sns/jscode2session
 
 
 

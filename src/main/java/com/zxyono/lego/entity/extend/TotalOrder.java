@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class TotalOrder {
     private String name;
-    private int number;
+    private Integer number;
 }
