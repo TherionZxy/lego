@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zxyono.lego.entity.User;
 import com.zxyono.lego.entity.extend.OpenIdJson;
 import com.zxyono.lego.exception.JsonParseException;
-import com.zxyono.lego.exception.RedisConnectException;
 import com.zxyono.lego.mapper.UserMapper;
 import com.zxyono.lego.repository.RedisRepository;
 import com.zxyono.lego.service.UserService;
@@ -16,7 +15,6 @@ import com.zxyono.lego.util.SessionKeyUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.net.ConnectException;
 
 @Service
 public class UserServiceImpl implements UserService {

@@ -1,53 +1,65 @@
-//package com.zxyono.lego.config;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//
-//import javax.sql.DataSource;
-//
-//@Configuration
-//@EnableWebSecurity
-//public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
-//    @Autowired
-//    DataSource dataSource;
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.jdbcAuthentication()
-//                .passwordEncoder(passwordEncoder())
-//                .dataSource(dataSource)
-//                .usersByUsernameQuery(
-//                        "select username, password, true from admin where username = ?"
-//                )
-//                .authoritiesByUsernameQuery(
-//                        "select username, authority from authorities where username = ?"
-//                );
-//    }
-//
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                .formLogin()
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/home", true)
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/login","/js/**","/css/**","/lib/**").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                // 这里关闭了跨站请求伪造检测
-//                .csrf().disable();
-//    }
-//}
+package com.zxyono.lego.config;
+
+import com.zxyono.lego.security.MyAuthenticationManager;
+import com.zxyono.lego.security.filter.JwtAuthenticationTokenFilter;
+import com.zxyono.lego.security.filter.MyAuthenticationFilter;
+import com.zxyono.lego.security.handler.MyAuthenticationSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+
+@Configuration
+@EnableWebSecurity
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private MyAuthenticationManager myAuthenticationManager;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public MyAuthenticationSuccessHandler myAuthenticationSuccessHandler() {
+        return new MyAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public MyAuthenticationFilter wechatAuthenticationFilter() {
+        MyAuthenticationFilter myAuthenticationFilter = new MyAuthenticationFilter("/login");
+        myAuthenticationFilter.setAuthenticationManager(myAuthenticationManager);
+        myAuthenticationFilter.setAuthenticationSuccessHandler(myAuthenticationSuccessHandler());
+        return myAuthenticationFilter;
+    }
+
+    @Bean
+    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
+        return new JwtAuthenticationTokenFilter();
+    }
+
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+            .cors().and()
+            .csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .headers().frameOptions().sameOrigin().and()
+            .authorizeRequests()
+                .antMatchers("/error/**","/h2-console/**").permitAll()
+                .anyRequest().authenticated();
+        http
+            // 使用wechatAuthenticationFilter替换默认的认证过滤器UsernamePasswordAuthenticationFilter
+            .addFilterAt(wechatAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationTokenFilter(), MyAuthenticationFilter.class);
+
+    }
+}

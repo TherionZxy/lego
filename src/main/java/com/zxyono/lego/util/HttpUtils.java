@@ -1,7 +1,6 @@
 package com.zxyono.lego.util;
 
 import com.zxyono.lego.constant.HttpStatus;
-import com.zxyono.lego.exception.HttpRequestException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

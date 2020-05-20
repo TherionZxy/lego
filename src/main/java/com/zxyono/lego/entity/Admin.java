@@ -12,5 +12,4 @@ public class Admin {
     private String adminName;
     private String adminPwd;
     private String adminPhone;
-    private String adminSess;
 }

@@ -2,7 +2,7 @@ create table if not exists `user` (
   user_id int(10) primary key auto_increment comment '用户ID',
   open_id varchar(32) unique not null comment '微信openid',
   default_phone varchar(20) default '' comment '默认手机号',
-  default_name varchar(15) comment '默认用户名'
+  default_name varchar(15) default '' comment '默认取件人姓名'
 );
 
 create table if not exists `fruit` (
@@ -58,6 +58,13 @@ create table if not exists `admin` (
   admin_id int(10) primary key auto_increment comment '管理员ID',
   admin_name varchar(15) comment '管理员用户名',
   admin_pwd varchar(18) comment '管理员密码',
-  admin_phone varchar(20) comment '管理员手机号',
-  admin_sess varchar(20) comment '管理员session'
+  admin_phone varchar(20) comment '管理员手机号'
+);
+
+create table if not exists `role` (
+  role_id int(10) primary key auto_increment comment '权限ID',
+  admin_id varchar(10) comment '管理员ID',
+  role_name varchar(20) comment '角色名',
+
+  constraint authorities_fk_admin foreign key (admin_id) references `admin`(admin_id)
 );

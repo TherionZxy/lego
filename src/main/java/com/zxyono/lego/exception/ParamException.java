@@ -1,9 +1,10 @@
 package com.zxyono.lego.exception;
 
+
 import com.zxyono.lego.enums.ExceptionEnum;
 
-public class JsonParseException extends BaseException {
-    public JsonParseException(ExceptionEnum exceptionEnum) {
+public class ParamException extends BaseException {
+    public ParamException(ExceptionEnum exceptionEnum) {
         super(exceptionEnum);
     }
 }

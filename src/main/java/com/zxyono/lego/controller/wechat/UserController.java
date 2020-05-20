@@ -1,4 +1,4 @@
-package com.zxyono.lego.controller;
+package com.zxyono.lego.controller.wechat;
 
 import com.zxyono.lego.entity.User;
 import com.zxyono.lego.entity.extend.OpenIdJson;
