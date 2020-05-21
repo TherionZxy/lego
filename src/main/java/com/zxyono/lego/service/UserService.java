@@ -32,27 +32,4 @@ public interface UserService {
      */
     public Integer modifyUserInfo(User user);
 
-    /**
-     * 通过code获取用户openid以及session_key等信息
-     * @param authUrl
-     * @param appId
-     * @param appSecret
-     * @param code
-     * @return
-     */
-    public OpenIdJson getOpenId(String authUrl, String appId, String appSecret, String code);
-
-    /**
-     * 创建登录态
-     * @param openIdJson
-     * @return
-     */
-    public String createToken(OpenIdJson openIdJson);
-
-    /**
-     * 根据小程序端每次请求附带的token查询用户的openId
-     * @param token
-     * @return
-     */
-    public String getOpenIdByToken(String token);
 }

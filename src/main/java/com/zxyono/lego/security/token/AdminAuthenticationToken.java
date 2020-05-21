@@ -26,11 +26,13 @@ public class AdminAuthenticationToken extends AbstractAuthenticationToken {
         super(authorities);
         this.username = username;
         this.password = password;
+        super.setAuthenticated(true);
     }
 
     public AdminAuthenticationToken(String username, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.username = username;
+        super.setAuthenticated(true);
     }
 
     @Override

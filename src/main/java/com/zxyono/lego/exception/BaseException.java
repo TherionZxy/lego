@@ -1,7 +1,9 @@
 package com.zxyono.lego.exception;
 
 import com.zxyono.lego.enums.ExceptionEnum;
+import lombok.Getter;
 
+@Getter
 public class BaseException extends RuntimeException {
     private Integer code;
     private String type;

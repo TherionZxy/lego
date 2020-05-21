@@ -54,7 +54,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .headers().frameOptions().sameOrigin().and()
             .authorizeRequests()
-                .antMatchers("/error/**","/h2-console/**").permitAll()
+                .antMatchers("/login","/h2-console/**").permitAll()
                 .anyRequest().authenticated();
         http
             // 使用wechatAuthenticationFilter替换默认的认证过滤器UsernamePasswordAuthenticationFilter

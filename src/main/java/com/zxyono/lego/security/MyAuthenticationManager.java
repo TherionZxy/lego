@@ -3,11 +3,14 @@ package com.zxyono.lego.security;
 import com.zxyono.lego.entity.Admin;
 import com.zxyono.lego.entity.Role;
 import com.zxyono.lego.entity.User;
+import com.zxyono.lego.enums.ExceptionEnum;
+import com.zxyono.lego.exception.LoginException;
 import com.zxyono.lego.security.token.AdminAuthenticationToken;
 import com.zxyono.lego.security.token.WechatAuthenticationToken;
 import com.zxyono.lego.service.AdminService;
 import com.zxyono.lego.service.RoleService;
 import com.zxyono.lego.service.UserService;
+import com.zxyono.lego.util.ResultMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +67,12 @@ public class MyAuthenticationManager implements AuthenticationManager {
 
         // 如果管理员未在数据库中存在
         if (admin == null) {
-            throw new RuntimeException("用户不存在");
+            throw new LoginException(ExceptionEnum.USER_NOT_FOUND);
         }
 
         // 如果管理员在数据库中存在, 比较密码是否相同
         if (!admin.getAdminPwd().equals(adminAuthenticationToken.getPassword())) {
-            throw new RuntimeException("用户名或密码错误");
+            throw new LoginException(ExceptionEnum.USERNAME_OR_PASSWORD_WRONG);
         }
 
         // 获取权限
@@ -91,5 +96,11 @@ public class MyAuthenticationManager implements AuthenticationManager {
 
         // 如果既不属于小程序令牌也不属于管理系统令牌，返回null
         return null;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(LoginException.class)
+    public ResultMap loginExceptionHandler(LoginException e) {
+        return ResultMap.error(e.getCode(), e.getMessage());
     }
 }
