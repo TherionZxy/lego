@@ -1,19 +1,20 @@
 package com.zxyono.lego.security.filter;
 
-import com.zxyono.lego.entity.Role;
-import com.zxyono.lego.enums.ExceptionEnum;
-import com.zxyono.lego.exception.AuthenticationException;
-import com.zxyono.lego.exception.JwtException;
-import com.zxyono.lego.exception.ParamException;
-import com.zxyono.lego.security.token.AdminAuthenticationToken;
-import com.zxyono.lego.security.token.WechatAuthenticationToken;
-import com.zxyono.lego.service.RoleService;
-import com.zxyono.lego.util.JwtTokenUtils;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import com.alibaba.fastjson.JSON;
+import com.zxyono.lego.constant.HttpStatus;
+import com.zxyono.lego.entity.Admin;
+import com.zxyono.lego.entity.User;
+import com.zxyono.lego.util.JwtTokenUtil;
+import com.zxyono.lego.util.RedisUtil;
+import com.zxyono.lego.util.ResultMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,59 +22,79 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Set;
 
+@Component
+@Slf4j
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+    @Value("${lego.token.expirationMilliSeconds}")
+    private long expirationMilliSeconds;
 
     @Autowired
-    private JwtTokenUtils jwtTokenUtils;
+    RedisUtil redisUtil;
 
-    @Autowired
-    private RoleService roleService;
-
-    /**
-     * JWT拦截器
-     * @param httpServletRequest
-     * @param httpServletResponse
-     * @param filterChain
-     * @throws ServletException
-     * @throws IOException
-     */
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        String wecaht_token = httpServletRequest.getHeader("wechat-token");
-        String admin_token = httpServletRequest.getHeader("admin-token");
-
-        try {
-            // 首先判断 请求头中是否有wechat-token
-            if (wecaht_token != null) {
-                String openid = jwtTokenUtils.getUsernameFromToken(wecaht_token);
-                if (openid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    authorities.add(new SimpleGrantedAuthority("USER"));
-                    SecurityContextHolder.getContext().setAuthentication(new WechatAuthenticationToken(openid, authorities));
-                }
-            } else if (admin_token != null) {
-                String username = jwtTokenUtils.getUsernameFromToken(admin_token);
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    List<Role> roles = roleService.queryRoleListByAdminName(username);
-                    System.out.println(roles);
-                    List<SimpleGrantedAuthority> authorities = roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toList());
-                    System.out.println(authorities);
-                    SecurityContextHolder.getContext().setAuthentication(new AdminAuthenticationToken(username, authorities));
-                }
-            } else {
-//                throw new AuthenticationException(ExceptionEnum.ACCESS_DENIED);
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            throw new ParamException(ExceptionEnum.PARAM_EXCEPTION);
-        } catch (ExpiredJwtException e) {
-            throw new JwtException(ExceptionEnum.JWT_EXCEPTION);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        //获取header中的token信息
+        String authToken = request.getHeader("token");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        if (null == authToken){
+            filterChain.doFilter(request,response);
+            return;
         }
 
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+        String subject = JwtTokenUtil.parseToken(authToken);
+
+        //获取redis中的token信息
+        if (!redisUtil.hasKey(authToken)){
+            //token 不存在 返回错误信息
+            response.getWriter().write(JSON.toJSONString(ResultMap.error(HttpStatus.FORBIDDEN, "未登录，或者授权过期")));
+            return;
+        }
+
+        //获取缓存中的信息
+        HashMap<String,Object> hashMap = (HashMap<String, Object>) redisUtil.hget(authToken);
+
+        User user = null;
+        Admin admin = null;
+
+        // 表示用户访问
+        if (subject.equals("user")) {
+            user = new User();
+            user.setUserId(Long.parseLong(hashMap.get("userId").toString()));
+            user.setAuthorities((Set<? extends GrantedAuthority>) hashMap.get("authorities"));
+
+            request.setAttribute("userId", user.getUserId());
+        } else {
+            admin = new Admin();
+            admin.setAdminId(Long.parseLong(hashMap.get("adminId").toString()));
+            admin.setAuthorities((Set<? extends GrantedAuthority>) hashMap.get("authorities"));
+
+            request.setAttribute("adminId", admin.getAdminId());
+        }
+
+        if (null == hashMap){
+            //用户信息不存在或转换错误，返回错误信息
+            response.getWriter().write(JSON.toJSONString(ResultMap.error(HttpStatus.UNAUTHORIZED, "未查询到登录状态")));
+            return;
+        }
+
+        //更新token过期时间
+        redisUtil.setKeyExpire(authToken, expirationMilliSeconds);
+
+        UsernamePasswordAuthenticationToken authenticationToken = null;
+
+        //将信息交给security
+        if (subject.equals("user")) {
+            authenticationToken = new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
+        } else {
+            authenticationToken = new UsernamePasswordAuthenticationToken(admin,null,admin.getAuthorities());
+        }
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        filterChain.doFilter(request,response);
     }
 }

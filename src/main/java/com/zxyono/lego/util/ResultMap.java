@@ -16,6 +16,9 @@ public class ResultMap extends HashMap<String, Object> {
     /** 数据对象 */
     public static final String DATA_TAG = "data";
 
+    /** 类型对象 */
+    public static final String TYPE_TAG = "type";
+
     /**
      * 初始化一个新创建的 ResultMap 对象。
      */
@@ -28,8 +31,7 @@ public class ResultMap extends HashMap<String, Object> {
      * @param code 状态码
      * @param msg 返回内容
      */
-    public ResultMap(int code, String msg)
-    {
+    public ResultMap(int code, String msg) {
         super.put(CODE_TAG, code);
         super.put(MSG_TAG, msg);
     }
@@ -41,12 +43,26 @@ public class ResultMap extends HashMap<String, Object> {
      * @param msg 返回内容
      * @param data 数据对象
      */
-    public ResultMap(int code, String msg, Object data)
-    {
+    public ResultMap(int code, String msg, Object data) {
         super.put(CODE_TAG, code);
         super.put(MSG_TAG, msg);
-        if (StringUtils.isNotNull(data))
-        {
+        if (StringUtils.isNotNull(data)) {
+            super.put(DATA_TAG, data);
+        }
+    }
+
+    /**
+     * 初始化一个新创建的 ResultMap 对象
+     * @param code 状态码
+     * @param msg 返回内容
+     * @param type 类型
+     * @param data 数据对象
+     */
+    public ResultMap(int code, String msg, String type , Object data) {
+        super.put(CODE_TAG, code);
+        super.put(MSG_TAG, msg);
+        super.put(TYPE_TAG, type);
+        if (StringUtils.isNotNull(data)) {
             super.put(DATA_TAG, data);
         }
     }
@@ -56,8 +72,7 @@ public class ResultMap extends HashMap<String, Object> {
      *
      * @return 成功消息
      */
-    public static ResultMap success()
-    {
+    public static ResultMap success() {
         return ResultMap.success("操作成功");
     }
 
@@ -66,8 +81,7 @@ public class ResultMap extends HashMap<String, Object> {
      *
      * @return 成功消息
      */
-    public static ResultMap success(Object data)
-    {
+    public static ResultMap success(Object data) {
         return ResultMap.success("操作成功", data);
     }
 
@@ -77,8 +91,7 @@ public class ResultMap extends HashMap<String, Object> {
      * @param msg 返回内容
      * @return 成功消息
      */
-    public static ResultMap success(String msg)
-    {
+    public static ResultMap success(String msg) {
         return ResultMap.success(msg, null);
     }
 
@@ -89,8 +102,7 @@ public class ResultMap extends HashMap<String, Object> {
      * @param data 数据对象
      * @return 成功消息
      */
-    public static ResultMap success(String msg, Object data)
-    {
+    public static ResultMap success(String msg, Object data) {
         return new ResultMap(HttpStatus.SUCCESS, msg, data);
     }
 
@@ -99,8 +111,7 @@ public class ResultMap extends HashMap<String, Object> {
      *
      * @return
      */
-    public static ResultMap error()
-    {
+    public static ResultMap error() {
         return ResultMap.error("操作失败");
     }
 
@@ -110,8 +121,7 @@ public class ResultMap extends HashMap<String, Object> {
      * @param msg 返回内容
      * @return 警告消息
      */
-    public static ResultMap error(String msg)
-    {
+    public static ResultMap error(String msg) {
         return ResultMap.error(msg, null);
     }
 
@@ -122,8 +132,7 @@ public class ResultMap extends HashMap<String, Object> {
      * @param data 数据对象
      * @return 警告消息
      */
-    public static ResultMap error(String msg, Object data)
-    {
+    public static ResultMap error(String msg, Object data) {
         return new ResultMap(HttpStatus.ERROR, msg, data);
     }
 
@@ -134,9 +143,20 @@ public class ResultMap extends HashMap<String, Object> {
      * @param msg 返回内容
      * @return 警告消息
      */
-    public static ResultMap error(int code, String msg)
-    {
+    public static ResultMap error(int code, String msg) {
         return new ResultMap(code, msg, null);
+    }
+
+    /**
+     * 返回错误信息
+     *
+     * @param code 状态码
+     * @param msg 返回内容
+     * @param type 错误类型
+     * @return 警告消息
+     */
+    public static ResultMap error(int code, String msg, String type) {
+        return new ResultMap(code, msg, type, null);
     }
 
 }

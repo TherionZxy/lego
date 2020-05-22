@@ -26,5 +26,14 @@ public class UserController {
     @Value("${lego.app.authurl}")
     private String authUrl;
 
-
+    /**
+     * 小程序端登录（包含注册，所以小程序端没有注册）
+     * @param code
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("login")
+    public ResultMap login(@RequestParam("code") String code) throws Exception {
+        return userService.wechatLogin(code);
+    }
 }

@@ -30,13 +30,13 @@ values ('admin','111111','123456');
 
 -- 权限表测试数据
 insert into `role`(admin_id, `role_name`)
-values (1, 'superadmin');
+values (1, 'SUPERADMIN');
 
 insert into `role`(admin_id, `role_name`)
-values (1, 'testadmin');
+values (1, 'ADMIN');
 
 insert into `role`(admin_id, `role_name`)
-values (2, 'testadmin');
+values (2, 'ADMIN');
 
 insert into `role`(admin_id, `role_name`)
-values (3, 'superadmin');
+values (3, 'SUPERADMIN');
