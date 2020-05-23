@@ -33,6 +33,6 @@ public interface UserService {
 //     */
 //    public Integer modifyUserInfo(User user);
 
-    public ResultMap wechatLogin(String code) throws Exception;
+    public ResultMap wechatLogin(String code);
 
 }

@@ -18,6 +18,7 @@ public enum ExceptionEnum {
     ACCESS_DENIED(40302, "authentication exception", "拒绝访问"),
     JWT_EXCEPTION(40305, "authentication exception", "JWT异常"),
     JWT_SIGNATURE_EXCEPTION(40306, "authentication exception", "JWT签名不匹配"),
+    JWT_CREATE_EXCEPTION(40307, "authentication exception", "Jwt code创建失败"),
     WX_AUTH_FAILED(50002, "wx exception", "小程序权限认证失败"),
     JSON_PARSE_EXCEPTION(50003, "json parse exception", "Json解析失败"),
 
@@ -26,8 +27,11 @@ public enum ExceptionEnum {
     USERNAME_NULL_EXCEPTION(50003, "login exception", "用户名不能为空"),
     PASSWORD_NULL_EXCEPTION(50004, "login exception", "密码不能为空"),
 
-    REDIS_SEVER_NOT_RUN(60001, "redis exception", "redis缓存服务器未启动");
+    NOT_HAVE_ENTITY_ID(50101, "param exception", "未传递实体Id"),
 
+    REDIS_SEVER_NOT_RUN(60001, "redis exception", "redis缓存服务器未启动"),
+    MYSQL_UNIQUE_COLUMNS(60101, "mysql exception","数据库Unique约束的列不能有重复值"),
+    CANT_DELETE_YOURSELF(60102, "mysql exception", "不能删除自己");
 
     private Integer code;
     private String type;

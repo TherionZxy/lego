@@ -165,7 +165,17 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+        </dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.200</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

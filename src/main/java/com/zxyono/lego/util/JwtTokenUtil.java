@@ -38,6 +38,7 @@ public class JwtTokenUtil {
         return Jwts.builder()
                 .setId(user.getUserId().toString())
                 .setSubject("user")
+
                 .setExpiration(new Date(System.currentTimeMillis()  + expirationSeconds * 1000))
                 .setIssuedAt(new Date())
                 .setIssuer("Zxyono")

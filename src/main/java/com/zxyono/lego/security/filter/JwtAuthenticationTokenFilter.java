@@ -70,9 +70,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         } else {
             admin = new Admin();
             admin.setAdminId(Long.parseLong(hashMap.get("adminId").toString()));
+            admin.setAdminName(hashMap.get("adminName").toString());
             admin.setAuthorities((Set<? extends GrantedAuthority>) hashMap.get("authorities"));
 
             request.setAttribute("adminId", admin.getAdminId());
+            request.setAttribute("adminName", admin.getAdminName());
         }
 
         if (null == hashMap){

@@ -1,6 +1,7 @@
 package com.zxyono.lego.util;
 
 import com.zxyono.lego.constant.HttpStatus;
+import com.zxyono.lego.enums.ExceptionEnum;
 
 import java.util.HashMap;
 
@@ -157,6 +158,10 @@ public class ResultMap extends HashMap<String, Object> {
      */
     public static ResultMap error(int code, String msg, String type) {
         return new ResultMap(code, msg, type, null);
+    }
+
+    public static ResultMap error(ExceptionEnum exceptionEnum) {
+        return new ResultMap(exceptionEnum.getCode(), exceptionEnum.getMessage(), exceptionEnum.getType(), null);
     }
 
 }

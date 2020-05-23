@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zxyono.lego.entity.User;
 import com.zxyono.lego.enums.ExceptionEnum;
+import com.zxyono.lego.exception.JwtException;
 import com.zxyono.lego.exception.WechatException;
 import com.zxyono.lego.mapper.UserMapper;
 import com.zxyono.lego.service.UserService;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     private long expirationMilliSeconds;
 
     @Override
-    public ResultMap wechatLogin(String code) throws Exception {
+    public ResultMap wechatLogin(String code) {
         JSONObject sessionInfo = JSONObject.parseObject(jcode2Session(code));
 
         if (sessionInfo == null) {
@@ -85,8 +86,13 @@ public class UserServiceImpl implements UserService {
         return ResultMap.success("用户登录成功", token);
     }
 
-    private String jcode2Session(String code)throws Exception{
-        String sessionInfo = Jcode2SessionUtil.jscode2Session(appid,appsecret,authurl,code,"authorization_code");//登录grantType固定
+    private String jcode2Session(String code) {
+        String sessionInfo = null;
+        try {
+            sessionInfo  = Jcode2SessionUtil.jscode2Session(appid,appsecret,authurl,code,"authorization_code");//登录grantType固定
+        } catch (Exception e) {
+            throw new JwtException(ExceptionEnum.JWT_CREATE_EXCEPTION);
+        }
         return sessionInfo;
     }
 

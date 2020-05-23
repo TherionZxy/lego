@@ -55,12 +55,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //关闭session管理，使用token机制处理
             .httpBasic().authenticationEntryPoint(authenticationEntryPoint).and()
             .authorizeRequests()
-                .antMatchers("/user/login").permitAll()    // 小程序用户登录
-                .antMatchers("/admin/login").permitAll()   // 管理员用户登录
-                .antMatchers("/logout/succeess").permitAll()
+                .antMatchers("/api/user/login").permitAll()    // 小程序用户登录
+                .antMatchers("/api/admin/login").permitAll()   // 管理员用户登录
+                .antMatchers("/api/logout/succeess").permitAll()
+                .antMatchers("/h2-console/**").permitAll()     // h2-console 放行
                 .anyRequest().authenticated()
                 .and()
-            .logout().logoutUrl("/logout").logoutSuccessUrl("/logout/succeess").logoutSuccessHandler(logoutSuccessHandler);
+            .headers().frameOptions().sameOrigin().and()
+            .logout().logoutUrl("/api/logout").logoutSuccessUrl("/logout/succeess").logoutSuccessHandler(logoutSuccessHandler);
 
         http.exceptionHandling().accessDeniedHandler(accessDeniedHandler);
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

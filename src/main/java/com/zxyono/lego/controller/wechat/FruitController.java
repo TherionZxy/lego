@@ -1,30 +1,31 @@
 package com.zxyono.lego.controller.wechat;
 
-import com.zxyono.lego.entity.wrapper.FruitWrapper;
 import com.zxyono.lego.service.FruitService;
 import com.zxyono.lego.util.ResultMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("fruit")
+@RequestMapping("api/fruit")
 public class FruitController {
     @Autowired
     private FruitService fruitService;
 
-    @RequestMapping(value = "get/{page}/{size}", method = RequestMethod.POST)
-    private ResultMap getFruitPagesWithParams(@PathVariable("page") Integer page, @PathVariable("size") Integer size,
-                                             @RequestBody FruitWrapper params) {
-        return ResultMap.success("请求成功", fruitService.queryFruitList(page, size, params));
+    @GetMapping(value = "list/{page}/{size}")
+    private ResultMap list(@PathVariable("page") Integer page, @PathVariable("size") Integer size,
+                           @RequestParam("fruitname") String fruitName, @RequestParam("status1") Integer isSale,
+                           @RequestParam("status2") Integer isFlashSale) {
+        return fruitService.queryFruitList(page, size, fruitName, isSale, isFlashSale);
     }
 
-    @RequestMapping(value = "get", method = RequestMethod.POST)
-    private ResultMap getFruitListWithParams(@RequestBody FruitWrapper params) {
-        return ResultMap.success("请求成功",fruitService.queryAllFruitList(params));
+    @GetMapping(value = "list")
+    private ResultMap list(@RequestParam("fruitname") String fruitName, @RequestParam("status1") Integer isSale,
+                           @RequestParam("status2") Integer isFlashSale) {
+        return ResultMap.success("请求成功",fruitService.queryAllFruitList(fruitName, isSale, isFlashSale));
     }
 
-    @RequestMapping(value = "get/{fruitId}")
-    private ResultMap getFruitById(@PathVariable("fruitId") Long fruitId) {
+    @GetMapping(value = "info/{fruitId}")
+    private ResultMap info(@PathVariable("fruitId") Long fruitId) {
         return ResultMap.success("请求成功", fruitService.queryFruitById(fruitId));
     }
 

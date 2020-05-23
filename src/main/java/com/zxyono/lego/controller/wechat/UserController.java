@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("api/user")
 public class UserController {
     @Autowired
     private UserService userService;

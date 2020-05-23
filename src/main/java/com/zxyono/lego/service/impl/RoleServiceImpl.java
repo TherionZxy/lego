@@ -17,4 +17,12 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> queryRoleListByAdminName(String name) {
         return roleMapper.findRoleByAdminName(name);
     }
+
+    @Override
+    public Integer createRoleWithParams(Long adminId, String rolename) {
+        Role role = new Role();
+        role.setAdminId(adminId);
+        role.setRoleName(rolename);
+        return roleMapper.insert(role);
+    }
 }

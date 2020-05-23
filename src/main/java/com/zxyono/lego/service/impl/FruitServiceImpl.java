@@ -9,6 +9,8 @@ import com.zxyono.lego.entity.vo.FruitVo;
 import com.zxyono.lego.entity.wrapper.FruitWrapper;
 import com.zxyono.lego.mapper.FruitMapper;
 import com.zxyono.lego.service.FruitService;
+import com.zxyono.lego.util.ResultMap;
+import com.zxyono.lego.util.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,45 +23,35 @@ public class FruitServiceImpl implements FruitService {
 
     /**
      * 封装创建QueryWrapper方法
-     * @param params
      * @return
      */
-    public QueryWrapper<Fruit> createQueryWrapper(FruitWrapper params) {
-        QueryWrapper<Fruit> queryWrapper = null;
-        if (!params.isEmpty()) {
-            // 当有查询条件时再实例化QueryWrapper
-            queryWrapper = new QueryWrapper<>();
-            if (params.getFruitName() != null && !"".equals(params.getFruitName())) {
-                queryWrapper.like("fruit_name", params.getFruitName());
-            }
-            if (params.getIsSale() != null) {
-                queryWrapper.eq("is_sale", params.getIsSale());
-            }
-            if (params.getIsFlashSale() != null) {
-                queryWrapper.eq("is_flash_sale", params.getIsFlashSale());
-            }
-        }
+    public QueryWrapper<Fruit> createQueryWrapper(String fruitName, Integer isSale, Integer isFlashSale) {
+        QueryWrapper<Fruit> queryWrapper = new QueryWrapper<>();
+        queryWrapper
+                .like(StringUtils.isNotEmpty(fruitName), "fruit_name", fruitName)
+                .eq(isSale != null && isSale != -1, "is_sale", isSale)
+                .eq(isFlashSale != null && isFlashSale != -1, "is_flash_sale", isFlashSale);
         return queryWrapper;
     }
 
     @Override
-    public FruitVo queryFruitList(Integer page, Integer size, FruitWrapper params) {
+    public ResultMap queryFruitList(Integer page, Integer size, String fruitName, Integer isSale, Integer isFlashSale) {
         FruitVo fruitVo = new FruitVo();
         IPage<Fruit> iPage = new Page<Fruit>(page, size);
 
-        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(params);
+        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(fruitName, isSale, isFlashSale);
 
         fruitMapper.selectPage(iPage, queryWrapper);
         fruitVo.setPage(page);
         fruitVo.setSize(size);
         fruitVo.setTotal(iPage.getTotal());
         fruitVo.setFruitList(iPage.getRecords());
-        return fruitVo;
+        return ResultMap.success(fruitVo);
     }
 
     @Override
-    public List<Fruit> queryAllFruitList(FruitWrapper params) {
-        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(params);
+    public List<Fruit> queryAllFruitList(String fruitName, Integer isSale, Integer isFlashSale) {
+        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(fruitName, isSale, isFlashSale);
         return fruitMapper.selectList(queryWrapper);
     }
 
@@ -85,13 +77,32 @@ public class FruitServiceImpl implements FruitService {
                 .set(fruit.getNormPrice() != null, "norm_price", fruit.getNormPrice())
                 .set(fruit.getFruitPic() != null, "fruit_pic", fruit.getFruitPic())
                 .set(fruit.getIsSale() != null && (fruit.getIsSale() == 0 || fruit.getIsSale() == 1), "is_sale", fruit.getIsSale())
+                .eq("fruit_id", fruit.getFruitId());
+        return fruitMapper.update(null, fruitUpdateWrapper);
+    }
+
+    @Override
+    public ResultMap modifyFlashSaleInfo(Fruit fruit) {
+        // 创建UpdateWrapper
+        UpdateWrapper<Fruit> fruitUpdateWrapper = new UpdateWrapper<>();
+        fruitUpdateWrapper
                 .set(fruit.getIsFlashSale() != null && (fruit.getIsFlashSale() == 0 || fruit.getIsFlashSale() == 1), "is_flash_sale", fruit.getIsFlashSale())
                 .set(fruit.getDiscountPrice() != null, "discount_price", fruit.getDiscountPrice())
                 .set(fruit.getMaxNum() != null, "max_num", fruit.getMaxNum())
                 .set(fruit.getStartTime() != null, "start_time", fruit.getStartTime())
                 .set(fruit.getEndTime() != null, "end_time", fruit.getEndTime())
                 .eq("fruit_id", fruit.getFruitId());
-        return fruitMapper.update(null, fruitUpdateWrapper);
+        return ResultMap.success(fruitMapper.update(null, fruitUpdateWrapper));
+    }
+
+    @Override
+    public ResultMap modifyFlashSaleStatus(Long fruitId) {
+        UpdateWrapper<Fruit> updateWrapper = new UpdateWrapper<>();
+        updateWrapper
+                .set("start_time", null)
+                .set("end_time", null)
+                .eq("fruit_id", fruitId);
+        return ResultMap.success(fruitMapper.update(null, updateWrapper));
     }
 
     @Override

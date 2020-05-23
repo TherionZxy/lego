@@ -56,7 +56,7 @@ create table if not exists `cart` (
 
 create table if not exists `admin` (
   admin_id int(10) primary key auto_increment comment '管理员ID',
-  admin_name varchar(15) comment '管理员用户名',
+  admin_name varchar(15) unique comment '管理员用户名',
   admin_pwd varchar(18) comment '管理员密码',
   admin_phone varchar(20) comment '管理员手机号'
 );
@@ -67,4 +67,12 @@ create table if not exists `role` (
   role_name varchar(20) comment '角色名',
 
   constraint authorities_fk_admin foreign key (admin_id) references `admin`(admin_id)
+);
+
+create table if not exists `history` (
+  history_id int(15) primary key auto_increment comment '历史操作记录ID',
+  admin_name varchar(10) comment '管理员用户名',
+  operation varchar(512) comment '操作记录',
+  type varchar(20) comment '记录类型',
+  time datetime comment '操作时间'
 );

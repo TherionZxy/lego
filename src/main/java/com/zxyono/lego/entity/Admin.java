@@ -1,5 +1,6 @@
 package com.zxyono.lego.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -14,11 +15,14 @@ import java.util.Set;
 @Data
 @TableName("admin")
 public class Admin implements UserDetails, Serializable {
-    @TableId
+    @TableId(value = "admin_id", type = IdType.AUTO)
     private Long adminId;
     private String adminName;
     private String adminPwd;
     private String adminPhone;
+
+    @TableField(exist = false)
+    private Integer adminType;
     @TableField(exist = false)
     private Set<? extends GrantedAuthority> authorities;
 

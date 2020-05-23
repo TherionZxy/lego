@@ -11,12 +11,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 public class Jcode2SessionUtil {
-    public static String jscode2Session(String appid,String secret, String url,String code,String grantType)throws Exception{
+    public static String jscode2Session(String appid,String secret, String url,String code,String grantType) throws UnsupportedEncodingException, IOException {
         //定义返回的json对象
         JSONObject result = new JSONObject();
         //创建请求通过code换取session等数据
