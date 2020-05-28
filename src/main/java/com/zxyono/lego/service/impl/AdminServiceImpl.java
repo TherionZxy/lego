@@ -7,16 +7,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zxyono.lego.entity.Admin;
 import com.zxyono.lego.entity.Role;
 import com.zxyono.lego.entity.vo.AdminVo;
+import com.zxyono.lego.entity.wrapper.AdminWrapper;
 import com.zxyono.lego.enums.ExceptionEnum;
 import com.zxyono.lego.exception.LoginException;
 import com.zxyono.lego.exception.ParamException;
 import com.zxyono.lego.mapper.AdminMapper;
 import com.zxyono.lego.mapper.RoleMapper;
 import com.zxyono.lego.service.AdminService;
-import com.zxyono.lego.util.JwtTokenUtil;
-import com.zxyono.lego.util.RedisUtil;
-import com.zxyono.lego.util.ResultMap;
-import com.zxyono.lego.util.StringUtils;
+import com.zxyono.lego.service.HistoryService;
+import com.zxyono.lego.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -37,9 +37,14 @@ public class AdminServiceImpl implements AdminService {
     @Resource
     private RedisUtil redisUtil;
 
+    @Autowired
+    private HistoryService historyService;
+
+    @Autowired
+    private AdminLoginMap adminLoginMap;
+
     @Value("${lego.token.expirationMilliSeconds}")
     private long expirationMilliSeconds;
-
 
     @Override
     public ResultMap adminLogin(String username, String password) {
@@ -62,12 +67,19 @@ public class AdminServiceImpl implements AdminService {
         admin.setAuthorities(authoritiesSet);
 
         HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("adminId",admin.getAdminId().toString());
+        hashMap.put("adminId", admin.getAdminId().toString());
         hashMap.put("adminName", admin.getAdminName());
         hashMap.put("authorities",authoritiesSet);
 
+//        historyService.createHistory(HistoryUtil.buildLoginHistory(username, "login"));
+
         String token = JwtTokenUtil.generateToken(admin, expirationMilliSeconds);
         redisUtil.hset(token, hashMap);
+
+        String temp = adminLoginMap.findAndSet(admin.getAdminId(), token);
+        if (temp != null) {
+            redisUtil.deleteKey(temp);
+        }
 
         hashMap.put("token", token);
         return ResultMap.success("管理员登录成功", hashMap);
@@ -87,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public ResultMap getAdminListWithPage(Integer page, Integer limit, String username, String phone, String sort) {
+    public ResultMap getAdminListWithPage(Integer page, Integer limit, AdminWrapper wrapper) {
         AdminVo adminVo = new AdminVo();
         // 分页细节
         IPage<Admin> iPage = new Page<>(page ,limit);
@@ -95,9 +107,9 @@ public class AdminServiceImpl implements AdminService {
         // 封装查询条件
         QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
         queryWrapper
-                .like(StringUtils.isNotEmpty(username), "admin_name" , username)
-                .eq(StringUtils.isNotEmpty(phone), "admin_phone", phone)
-                .orderBy(StringUtils.isNotEmpty(sort), sort.equals("+id"), "admin_id");
+                .like(StringUtils.isNotEmpty(wrapper.getUsername()), "admin_name" , wrapper.getUsername())
+                .eq(StringUtils.isNotEmpty(wrapper.getPhone()), "admin_phone", wrapper.getPhone())
+                .orderBy(StringUtils.isNotEmpty(wrapper.getSort()), wrapper.getSort().equals("+id"), "admin_id");
         adminMapper.selectPage(iPage, queryWrapper);
 
         adminVo.setPage(page);
@@ -150,13 +162,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public ResultMap getAdminList(String username, String phone, String sort) {
+    public ResultMap getAdminList(AdminWrapper wrapper) {
         // 封装查询条件
         QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
         queryWrapper
-                .like(StringUtils.isNotEmpty(username), "admin_name" , username)
-                .eq(StringUtils.isNotEmpty(phone), "admin_phone", phone)
-                .orderBy(StringUtils.isNotEmpty(sort), sort.equals("+id"), "admin_id");
+                .like(StringUtils.isNotEmpty(wrapper.getUsername()), "admin_name" , wrapper.getUsername())
+                .eq(StringUtils.isNotEmpty(wrapper.getPhone()), "admin_phone", wrapper.getPhone())
+                .orderBy(StringUtils.isNotEmpty(wrapper.getSort()), wrapper.getSort().equals("+id"), "admin_id");
 
         return ResultMap.success(adminMapper.selectList(queryWrapper));
     }

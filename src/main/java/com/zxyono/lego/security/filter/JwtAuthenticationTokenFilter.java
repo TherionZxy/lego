@@ -67,6 +67,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             user.setAuthorities((Set<? extends GrantedAuthority>) hashMap.get("authorities"));
 
             request.setAttribute("userId", user.getUserId());
+            request.setAttribute("openId", hashMap.get("openid").toString());
         } else {
             admin = new Admin();
             admin.setAdminId(Long.parseLong(hashMap.get("adminId").toString()));

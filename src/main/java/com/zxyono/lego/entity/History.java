@@ -3,13 +3,12 @@ package com.zxyono.lego.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-@TableName("history")
+@TableName("tb_history")
 public class History {
     @TableId(value = "history_id", type = IdType.AUTO)
     private Long historyId;

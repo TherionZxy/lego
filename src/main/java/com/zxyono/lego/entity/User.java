@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Data
-@TableName("user")
+@TableName("tb_user")
 @NoArgsConstructor
 public class User implements UserDetails, Serializable {
     @TableId(value = "user_id",type = IdType.AUTO)

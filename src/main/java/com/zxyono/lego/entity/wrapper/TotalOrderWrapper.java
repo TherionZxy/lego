@@ -2,9 +2,10 @@ package com.zxyono.lego.entity.wrapper;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class FruitWrapper {
+public class TotalOrderWrapper {
     private String fruitName;
-    private Integer isSale;
-    private Integer isFlashSale;
+    private Date time;
 }

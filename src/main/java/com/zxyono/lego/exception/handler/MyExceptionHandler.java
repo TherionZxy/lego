@@ -8,7 +8,6 @@ import com.zxyono.lego.exception.WechatException;
 import com.zxyono.lego.util.ResultMap;
 import io.lettuce.core.RedisCommandTimeoutException;
 import io.lettuce.core.RedisConnectionException;
-import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -66,8 +65,8 @@ public class MyExceptionHandler {
         return ResultMap.error(e.getCode(), e.getMessage(), e.getType());
     }
 
-    @ExceptionHandler(JdbcSQLIntegrityConstraintViolationException.class)
-    public ResultMap jdbcSQLIntegrityConstraintViolationExceptionHandler(JdbcSQLIntegrityConstraintViolationException e) {
-        return ResultMap.error(ExceptionEnum.MYSQL_UNIQUE_COLUMNS);
-    }
+//    @ExceptionHandler(JdbcSQLIntegrityConstraintViolationException.class)
+//    public ResultMap jdbcSQLIntegrityConstraintViolationExceptionHandler(JdbcSQLIntegrityConstraintViolationException e) {
+//        return ResultMap.error(ExceptionEnum.MYSQL_UNIQUE_COLUMNS);
+//    }
 }

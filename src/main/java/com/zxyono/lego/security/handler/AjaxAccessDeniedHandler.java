@@ -18,6 +18,6 @@ public class AjaxAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e) throws IOException, ServletException {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        response.getWriter().write(JSON.toJSONString(ResultMap.error(HttpStatus.ERROR, "拒绝访问")));
+        response.getWriter().write(JSON.toJSONString(ResultMap.error(HttpStatus.ERROR, "权限不足，请求被拒绝")));
     }
 }

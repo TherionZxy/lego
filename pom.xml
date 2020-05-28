@@ -65,11 +65,11 @@
 
 		<!-- ******************  数据库  ****************** -->
 		<!-- 内嵌数据库H2，用于开发环境 -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.h2database</groupId>-->
+			<!--<artifactId>h2</artifactId>-->
+			<!--<scope>runtime</scope>-->
+		<!--</dependency>-->
 		<!-- Mysql数据库，用于生产环境 -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -105,6 +105,12 @@
 			<groupId>net.coobird</groupId>
 			<artifactId>thumbnailator</artifactId>
 			<version>0.4.11</version>
+		</dependency>
+		<!-- 七牛云服务端SDK -->
+		<dependency>
+			<groupId>com.qiniu</groupId>
+			<artifactId>qiniu-java-sdk</artifactId>
+			<version>7.2.0</version>
 		</dependency>
 
 		<!-- 日志文件 -->
@@ -165,16 +171,7 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.200</version>
-        </dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.200</version>
-		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -3,6 +3,7 @@ package com.zxyono.lego.controller.admin;
 import com.zxyono.lego.service.HistoryService;
 import com.zxyono.lego.util.ResultMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

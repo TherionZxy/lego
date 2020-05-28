@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Data
-@TableName("fruit")
+@TableName("tb_fruit")
 public class Fruit {
     @TableId(value = "fruit_id",type = IdType.AUTO)
     private Long fruitId;
@@ -18,7 +18,8 @@ public class Fruit {
     private Double normPrice;
     private Double discountPrice;
     private String fruitIntro;
-    private String fruitPic;
+    private Integer display;
+    private Integer intro;
     private Integer isFlashSale;
     private Integer isSale;
     private Integer maxNum;

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zxyono.lego.entity.Fruit;
 import com.zxyono.lego.entity.vo.FruitVo;
+import com.zxyono.lego.entity.wechat.FruitWx;
 import com.zxyono.lego.entity.wrapper.FruitWrapper;
 import com.zxyono.lego.mapper.FruitMapper;
 import com.zxyono.lego.service.FruitService;
@@ -25,21 +26,21 @@ public class FruitServiceImpl implements FruitService {
      * 封装创建QueryWrapper方法
      * @return
      */
-    public QueryWrapper<Fruit> createQueryWrapper(String fruitName, Integer isSale, Integer isFlashSale) {
+    public QueryWrapper<Fruit> createQueryWrapper(FruitWrapper wrapper) {
         QueryWrapper<Fruit> queryWrapper = new QueryWrapper<>();
         queryWrapper
-                .like(StringUtils.isNotEmpty(fruitName), "fruit_name", fruitName)
-                .eq(isSale != null && isSale != -1, "is_sale", isSale)
-                .eq(isFlashSale != null && isFlashSale != -1, "is_flash_sale", isFlashSale);
+                .like(StringUtils.isNotEmpty(wrapper.getFruitName()), "fruit_name", wrapper.getFruitName())
+                .eq(wrapper.getIsSale() != null && wrapper.getIsSale() != -1, "is_sale", wrapper.getIsSale())
+                .eq(wrapper.getIsFlashSale() != null && wrapper.getIsFlashSale() != -1, "is_flash_sale", wrapper.getIsFlashSale());
         return queryWrapper;
     }
 
     @Override
-    public ResultMap queryFruitList(Integer page, Integer size, String fruitName, Integer isSale, Integer isFlashSale) {
+    public ResultMap queryFruitList(Integer page, Integer size, FruitWrapper wrapper) {
         FruitVo fruitVo = new FruitVo();
         IPage<Fruit> iPage = new Page<Fruit>(page, size);
 
-        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(fruitName, isSale, isFlashSale);
+        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(wrapper);
 
         fruitMapper.selectPage(iPage, queryWrapper);
         fruitVo.setPage(page);
@@ -50,8 +51,8 @@ public class FruitServiceImpl implements FruitService {
     }
 
     @Override
-    public List<Fruit> queryAllFruitList(String fruitName, Integer isSale, Integer isFlashSale) {
-        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(fruitName, isSale, isFlashSale);
+    public List<Fruit> queryAllFruitList(FruitWrapper wrapper) {
+        QueryWrapper<Fruit> queryWrapper = createQueryWrapper(wrapper);
         return fruitMapper.selectList(queryWrapper);
     }
 
@@ -64,6 +65,7 @@ public class FruitServiceImpl implements FruitService {
     public Integer createFruit(Fruit fruit) {
         // 抹去fruit的id，id由数据库自动生成，防止恶意攻击
         fruit.setFruitId(null);
+        fruit.setDiscountPrice(fruit.getNormPrice());
         return fruitMapper.insert(fruit);
     }
 
@@ -75,10 +77,18 @@ public class FruitServiceImpl implements FruitService {
                 .set(fruit.getFruitName() != null, "fruit_name", fruit.getFruitName())
                 .set(fruit.getFruitIntro() != null, "fruit_intro", fruit.getFruitIntro())
                 .set(fruit.getNormPrice() != null, "norm_price", fruit.getNormPrice())
-                .set(fruit.getFruitPic() != null, "fruit_pic", fruit.getFruitPic())
+                .set(fruit.getDisplay() != null, "display", fruit.getDisplay())
+                .set(fruit.getIntro() != null, "intro", fruit.getIntro())
                 .set(fruit.getIsSale() != null && (fruit.getIsSale() == 0 || fruit.getIsSale() == 1), "is_sale", fruit.getIsSale())
+                .set(fruit.getIsFlashSale() != null && (fruit.getIsFlashSale() == 0 || fruit.getIsFlashSale() == 1), "is_flash_sale", fruit.getIsFlashSale())
                 .eq("fruit_id", fruit.getFruitId());
         return fruitMapper.update(null, fruitUpdateWrapper);
+    }
+
+    @Override
+    public Integer removeFruitFromFlashSale(Long fruitId) {
+        return fruitMapper.removeFruitFromFlashSale(fruitId);
+
     }
 
     @Override
@@ -108,5 +118,15 @@ public class FruitServiceImpl implements FruitService {
     @Override
     public Integer deleteFruitById(Long fruitId) {
         return fruitMapper.deleteById(fruitId);
+    }
+
+    @Override
+    public ResultMap searchFruitList(String searchKey, Integer activity) {
+        return ResultMap.success(fruitMapper.queryFruitWxList(searchKey, activity));
+    }
+
+    @Override
+    public ResultMap getOne(Long id) {
+        return ResultMap.success(fruitMapper.queryFruitWxById(id));
     }
 }

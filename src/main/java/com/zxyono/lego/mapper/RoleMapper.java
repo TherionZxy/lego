@@ -11,9 +11,9 @@ import java.util.List;
 
 @Mapper
 public interface RoleMapper extends BaseMapper<Role> {
-    @Select("select * from role A left join admin B on A.admin_id=B.admin_id where admin_name=#{name}")
+    @Select("select * from tb_role A left join tb_admin B on A.admin_id=B.admin_id where admin_name=#{name}")
     public List<Role> findRoleByAdminName(@Param("name") String name);
 
-    @Delete("delete from role where admin_id = #{adminId}")
+    @Delete("delete from tb_role where admin_id = #{adminId}")
     public int deleteRoleByAdminId(@Param("adminId") Long adminId);
 }

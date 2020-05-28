@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Set;
 
 @Data
-@TableName("admin")
+@TableName("tb_admin")
 public class Admin implements UserDetails, Serializable {
     @TableId(value = "admin_id", type = IdType.AUTO)
     private Long adminId;

@@ -2,16 +2,14 @@ package com.zxyono.lego.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zxyono.lego.entity.User;
 import com.zxyono.lego.enums.ExceptionEnum;
 import com.zxyono.lego.exception.JwtException;
 import com.zxyono.lego.exception.WechatException;
 import com.zxyono.lego.mapper.UserMapper;
 import com.zxyono.lego.service.UserService;
-import com.zxyono.lego.util.Jcode2SessionUtil;
-import com.zxyono.lego.util.JwtTokenUtil;
-import com.zxyono.lego.util.RedisUtil;
-import com.zxyono.lego.util.ResultMap;
+import com.zxyono.lego.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -79,6 +77,7 @@ public class UserServiceImpl implements UserService {
         HashMap<String,Object> hashMap = new HashMap<>();
         hashMap.put("userId",user.getUserId().toString());
         hashMap.put("authorities",authoritiesSet);
+        hashMap.put("openid", user.getOpenId());
 
         String token = JwtTokenUtil.generateToken(user, expirationMilliSeconds);
         redisUtil.hset(token, hashMap);
@@ -96,34 +95,22 @@ public class UserServiceImpl implements UserService {
         return sessionInfo;
     }
 
+    @Override
+    public ResultMap updateUserInfo(Long userId, String phone, String name) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper
+                .set(StringUtils.isNotEmpty(phone) && !"".equals(phone), "default_phone", phone)
+                .set(StringUtils.isNotEmpty(name) && !"".equals(name), "default_name", name)
+                .eq("user_id", userId);
+        return ResultMap.success(userMapper.update(null, updateWrapper));
+    }
 
-
-    //    @Override
-//    public User queryUserById(Long userId) {
-//        return userMapper.selectById(userId);
-//    }
-//
-//    @Override
-//    public User queryUserByOpenId(String openId) {
-//        return userMapper.selectOne(new QueryWrapper<User>().eq("open_id", openId));
-//    }
-//
-//    @Override
-//    public Integer createUser(User user) {
-//        user.setUserId(null);
-//        return userMapper.insert(user);
-//    }
-//
-//    @Override
-//    public Integer modifyUserInfo(User user) {
-//        UpdateWrapper<User> userUpdateWrapper = new UpdateWrapper<>();
-//        userUpdateWrapper
-//                .set(user.getDefaultName() != null, "default_name", user.getDefaultName())
-//                .set(user.getDefaultPhone() != null, "default_phone", user.getDefaultPhone())
-//                .eq("open_id", user.getOpenId());
-//        return userMapper.update(null, userUpdateWrapper);
-//    }
-
-
+    @Override
+    public ResultMap queryUserById(Long userId) {
+        User user = userMapper.selectById(userId);
+        // 不给用户看openid
+        user.setOpenId(null);
+        return ResultMap.success(user);
+    }
 
 }

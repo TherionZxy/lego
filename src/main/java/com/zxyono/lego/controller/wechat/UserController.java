@@ -36,4 +36,24 @@ public class UserController {
     public ResultMap login(@RequestParam("code") String code) throws Exception {
         return userService.wechatLogin(code);
     }
+
+    /**
+     * 小程序端修改默认名称和默认手机号
+     */
+    @PostMapping("update")
+    public ResultMap update(HttpServletRequest request, @RequestParam("phone") String phone, @RequestParam("name") String name) {
+        Long userId = Long.parseLong(request.getAttribute("userId").toString());
+        return userService.updateUserInfo(userId, phone, name);
+    }
+
+    /**
+     * 小程序端获取默认名称和手机号
+     * @param request
+     * @return
+     */
+    @GetMapping("info")
+    public ResultMap info(HttpServletRequest request) {
+        Long userId = Long.parseLong(request.getAttribute("userId").toString());
+        return userService.queryUserById(userId);
+    }
 }

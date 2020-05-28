@@ -58,7 +58,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/user/login").permitAll()    // 小程序用户登录
                 .antMatchers("/api/admin/login").permitAll()   // 管理员用户登录
                 .antMatchers("/api/logout/succeess").permitAll()
-                .antMatchers("/h2-console/**").permitAll()     // h2-console 放行
+                .antMatchers("/api/fruit/search", "/api/fruit/search/**", "/api/fruit/detail").permitAll()
+//                .antMatchers("/h2-console/**").permitAll()     // h2-console 放行
                 .anyRequest().authenticated()
                 .and()
             .headers().frameOptions().sameOrigin().and()
