@@ -1,9 +1,10 @@
 package com.zxyono.lego.controller.admin;
 
 import com.zxyono.lego.entity.Fruit;
+import com.zxyono.lego.entity.History;
+import com.zxyono.lego.enums.HistoryEnum;
 import com.zxyono.lego.service.FruitService;
 import com.zxyono.lego.service.HistoryService;
-import com.zxyono.lego.util.HistoryUtil;
 import com.zxyono.lego.util.ResultMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +22,14 @@ public class FruitAdminController {
     @PostMapping(value = "add")
     private ResultMap addFruit(HttpServletRequest request, @RequestBody Fruit fruit) {
         fruitService.createFruit(fruit);
-        historyService.createHistory(HistoryUtil.buildCreateHistory(request, "fruit", "水果\"" + fruit.getFruitName() + "\""));
+        historyService.createHistory(new History(request, HistoryEnum.A_CREATE_B, "fruit", "水果\"" + fruit.getFruitName() + "\""));
         return ResultMap.success("新增水果成功");
     }
 
     @PostMapping(value = "update")
     private ResultMap updateFruit(HttpServletRequest request, @RequestBody Fruit fruit) {
-       fruitService.modifyFruitInfo(fruit);
-       historyService.createHistory(HistoryUtil.buildUpdateHistory(request, "fruit", "水果\"" + fruit.getFruitName() + "\"", "水果信息"));
+        fruitService.modifyFruitInfo(fruit);
+        historyService.createHistory(new History(request, HistoryEnum.A_UPDATE_B, "fruit", "水果\"" + fruit.getFruitName() + "\"", "水果信息"));
         return ResultMap.success("修改水果信息成功");
     }
 

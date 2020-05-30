@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zxyono.lego.entity.Admin;
+import com.zxyono.lego.entity.History;
 import com.zxyono.lego.entity.Role;
 import com.zxyono.lego.entity.vo.AdminVo;
 import com.zxyono.lego.entity.wrapper.AdminWrapper;
 import com.zxyono.lego.enums.ExceptionEnum;
+import com.zxyono.lego.enums.HistoryEnum;
 import com.zxyono.lego.exception.LoginException;
 import com.zxyono.lego.exception.ParamException;
 import com.zxyono.lego.mapper.AdminMapper;
@@ -80,6 +82,9 @@ public class AdminServiceImpl implements AdminService {
         if (temp != null) {
             redisUtil.deleteKey(temp);
         }
+
+        historyService.createHistory(new History(admin.getAdminName(), HistoryEnum.A_LOGIN, "login"));
+
 
         hashMap.put("token", token);
         return ResultMap.success("管理员登录成功", hashMap);

@@ -26,7 +26,12 @@ public class CartServiceImpl implements CartService {
         cart.setFruitId(id);
         cart.setFruitNum(num);
         cart.setUserId(userId);
-        return ResultMap.success(cartMapper.insert(cart));
+        Long cartId = cartMapper.checkCartByFruitId(id);
+        if (cartId != null) {
+            return ResultMap.success(cartMapper.updateById(userId, id, num));
+        } else {
+            return ResultMap.success(cartMapper.insert(cart));
+        }
     }
 
     @Override

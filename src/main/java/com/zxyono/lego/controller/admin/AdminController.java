@@ -1,8 +1,10 @@
 package com.zxyono.lego.controller.admin;
 
 import com.zxyono.lego.entity.Admin;
+import com.zxyono.lego.entity.History;
 import com.zxyono.lego.entity.wrapper.AdminWrapper;
 import com.zxyono.lego.enums.ExceptionEnum;
+import com.zxyono.lego.enums.HistoryEnum;
 import com.zxyono.lego.exception.DataBaseException;
 import com.zxyono.lego.mapper.AdminMapper;
 import com.zxyono.lego.service.AdminService;
@@ -54,20 +56,20 @@ public class AdminController {
 
     @PostMapping("list")
     public ResultMap list(HttpServletRequest request, @RequestBody AdminWrapper wrapper) {
-        historyService.createHistory(HistoryUtil.buildExportHistory(request, "user", " 用户管理表 "));
+        historyService.createHistory(new History(request, HistoryEnum.A_EXPORT_B, "user", " 用户管理表"));
         return adminService.getAdminList(wrapper);
     }
 
     @PostMapping("update")
     public ResultMap update(HttpServletRequest request, @RequestBody Admin admin) {
         String name = adminMapper.selectById(admin.getAdminId()).getAdminName();
-        historyService.createHistory(HistoryUtil.buildUpdateHistory(request, "user", "用户名为 " + name, " 管理员信息"));
+        historyService.createHistory(new History(request, HistoryEnum.A_UPDATE_B, "user", "用户名为 " + name, " 管理员信息"));
         return adminService.modifyAdminInfo(admin);
     }
 
     @PostMapping("create")
     public ResultMap create(HttpServletRequest request, @RequestBody Admin admin) {
-        historyService.createHistory(HistoryUtil.buildCreateHistory(request, "user", "管理员"+admin.getAdminName()));
+        historyService.createHistory(new History(request, HistoryEnum.A_CREATE_B ,"user", "管理员"+admin.getAdminName()));
         return adminService.createAdmin(admin);
     }
 
@@ -79,7 +81,7 @@ public class AdminController {
             throw new DataBaseException(ExceptionEnum.CANT_DELETE_YOURSELF);
         }
 
-        historyService.createHistory(HistoryUtil.buildDeleteHistory(request, "user", "用户名为 "+name, " 管理员"));
+        historyService.createHistory(new History(request, HistoryEnum.A_DELETE_B, "user", "用户名为 "+name, " 管理员"));
 
         return adminService.removeAdminById(adminId);
     }
