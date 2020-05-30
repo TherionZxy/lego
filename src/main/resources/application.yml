@@ -61,15 +61,15 @@ lego:
     width: 500
   app:
     # 小程序相关参数
-#    appid: wx5ecf42a219287bca
-    appid: wxa4b82aa3f2b0b4b4
-#    appsecret: 9ddad395d6b70216539a55c4cc6a4941
-    appsecret: d08c0b6f6a429c58efa00c0117f32d76
+#    appid:
+    appid:
+#    appsecret:
+    appsecret:
     authurl: https://api.weixin.qq.com/sns/jscode2session
   qiniu:
-    ak: A1v6koiMUF8Oi6quuPNW6zaYTKXjrBipgEFse-8l
-    sk: HLgJVQ9GwetOQ1U-AQcG6IR7N88ai4ysf87sseib
-    bucket: zxyono
+    ak:
+    sk:
+    bucket:
     cdn: http://qavqpe40f.bkt.clouddn.com/
   token:
     expirationMilliSeconds: 7200000
