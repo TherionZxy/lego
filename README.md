@@ -1,4 +1,4 @@
-## Lego mini program
+## Lego mini program —— by 小野
 
 #### 使用技术：
 1. SpringBoot
