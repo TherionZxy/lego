@@ -1,9 +1,11 @@
 ## Lego mini program —— by 小野
 
 #### 使用技术：
-1. SpringBoot
+1. Spring、SpringBoot、SpringSecurity
 2. Mybatis-plus
 3. Druid
+4. Redis
+5. JWT
 
 #### 数据库： Mysql
 
